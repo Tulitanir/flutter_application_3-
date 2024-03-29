@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_3/data_provider.dart';
 import 'package:flutter_application_3/page3.dart';
 
 class SecondPage extends StatefulWidget {
-  final String name;
-  const SecondPage({super.key, required this.name});
+  const SecondPage({super.key});
 
   @override
   SecondPageState createState() {
@@ -12,19 +12,12 @@ class SecondPage extends StatefulWidget {
 }
 
 class SecondPageState extends State<SecondPage> {
-  late String name;
-
   final _formKey2 = GlobalKey<FormState>();
   final TextEditingController _controller = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    name = widget.name;
-  }
-
-  @override
   Widget build(BuildContext context) {
+    var data = AppDataProvider.of(context);
     return Form(
       key: _formKey2,
       child: Column(
@@ -33,7 +26,7 @@ class SecondPageState extends State<SecondPage> {
           Padding(
             padding: const EdgeInsets.all(32),
             child: Text(
-              '$name, добро пожаловать!',
+              '${data?.personData.name}, добро пожаловать!',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
@@ -68,12 +61,12 @@ class SecondPageState extends State<SecondPage> {
                 if (_formKey2.currentState!.validate()) {
                   var date = DateTime.parse(_controller.text);
                   var age = getDiffY(date, DateTime.now());
+                  AppDataProvider.of(context)?.personData.changeAge(age);
                   _controller.clear();
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                              ThirdPage(name: name, age: age)));
+                          builder: (context) => const ThirdPage()));
                 }
               },
               child: const Text('Войти'),

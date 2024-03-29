@@ -25,7 +25,7 @@ class NameFormState extends State<NameForm> {
             keyboardType: TextInputType.name,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Пожалуйста, введите важе имя';
+                return 'Пожалуйста, введите ваше имя';
               }
               return null;
             },
@@ -46,15 +46,13 @@ class NameFormState extends State<NameForm> {
             child: ElevatedButton(
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
+                  var name = _controller.text;
+                  _controller.clear();
                   Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              SecondPage(name: _controller.text)));
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Вы ввели некорректное имя')),
-                  );
+                              Scaffold(body: SecondPage(name: name))));
                 }
               },
               child: const Text('Войти'),

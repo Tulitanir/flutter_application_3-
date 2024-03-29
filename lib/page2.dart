@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_3/page3.dart';
 
 class SecondPage extends StatefulWidget {
   final String name;
@@ -6,22 +7,26 @@ class SecondPage extends StatefulWidget {
 
   @override
   SecondPageState createState() {
-    return SecondPageState(name);
+    return SecondPageState();
   }
 }
 
 class SecondPageState extends State<SecondPage> {
-  final String name;
-  int age = 0;
+  late String name;
 
-  final TextEditingController _textEditingController = TextEditingController();
+  final _formKey2 = GlobalKey<FormState>();
+  final TextEditingController _controller = TextEditingController();
 
-  SecondPageState(this.name);
+  @override
+  void initState() {
+    super.initState();
+    name = widget.name;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Center(
+    return Form(
+      key: _formKey2,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -38,28 +43,70 @@ class SecondPageState extends State<SecondPage> {
           ),
           Padding(
               padding: const EdgeInsets.all(32),
-              child: TextField(
-                controller: _textEditingController,
+              child: TextFormField(
+                controller: _controller,
                 decoration: const InputDecoration(labelText: "Дата рождения"),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Пожалуйста, укажите вашу дату рождения';
+                  }
+                  var date = DateTime.parse(value);
+                  if (getDiffY(date, DateTime.now()) < 14) {
+                    return 'Возраст не может быть меньше 14 лет';
+                  }
+                  return null;
+                },
                 readOnly: true,
                 onTap: () {
-                  _selectDate(context);
+                  _selectDate(context, _controller);
                 },
               )),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 32),
+            child: ElevatedButton(
+              onPressed: () {
+                if (_formKey2.currentState!.validate()) {
+                  var date = DateTime.parse(_controller.text);
+                  var age = getDiffY(date, DateTime.now());
+                  _controller.clear();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ThirdPage(name: name, age: age)));
+                }
+              },
+              child: const Text('Войти'),
+            ),
+          )
         ],
       ),
-    ));
+    );
+  }
+}
+
+Future<void> _selectDate(
+    BuildContext context, TextEditingController controller) async {
+  DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1980),
+      lastDate: DateTime(2025));
+
+  if (picked != null) {
+    controller.text = picked.toString().split(" ")[0];
+  } else {
+    controller.text = "";
+  }
+}
+
+int getDiffY(DateTime then, DateTime now) {
+  int years = now.year - then.year;
+  int months = now.month - then.month;
+  int days = now.day - then.day;
+  if (months < 0 || (months == 0 && days < 0)) {
+    years--;
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    DateTime? _picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(1980),
-        lastDate: DateTime(2025));
-
-    if (_picked != null) {
-      _textEditingController.text = _picked.toString().split(" ")[0];
-    }
-  }
+  return years;
 }

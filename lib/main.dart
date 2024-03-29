@@ -35,7 +35,7 @@ class MyHomePage extends StatelessWidget {
             'Представьтесь:',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          Padding(padding: EdgeInsets.all(16), child: NameForm())
+          Padding(padding: EdgeInsets.all(32), child: NameForm())
         ],
       ),
     ));

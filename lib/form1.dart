@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_application_3/page2.dart';
 
 class NameForm extends StatefulWidget {
   const NameForm({super.key});
@@ -36,17 +37,23 @@ class NameFormState extends State<NameForm> {
                     onPressed: _controller.clear,
                     icon: const Icon(Icons.clear))),
             inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z]")),
+              FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Zа-яА-Я]")),
               LengthLimitingTextInputFormatter(30)
             ],
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 32),
             child: ElevatedButton(
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              SecondPage(name: _controller.text)));
+                } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Processing Data')),
+                    const SnackBar(content: Text('Вы ввели некорректное имя')),
                   );
                 }
               },
@@ -63,6 +70,4 @@ class NameFormState extends State<NameForm> {
     _controller.dispose();
     super.dispose();
   }
-
-  void doSmth() {}
 }
